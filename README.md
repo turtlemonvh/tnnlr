@@ -8,6 +8,9 @@ Tnnlr is a simple utility to managing ssh tunnels.  It is currently a very ugly 
 # Get the tool
 go get github.com/turtlemonvh/tnnlr
 
+# Install binary
+go install $GOPATH/src/github.com/turtlemonvh/tnnlr/tnnlr
+
 # Create a config file with tunnels for this project
 cat > $GOPATH/src/github.com/turtlemonvh/tnnlr/.tunnlr << EOF
 [
@@ -28,11 +31,10 @@ cat > $GOPATH/src/github.com/turtlemonvh/tnnlr/.tunnlr << EOF
 ]
 EOF
 
-# Start up rhe web ui
-cd $GOPATH/src/github.com/turtlemonvh/tnnlr
-go run *.go
+# Start up the web ui on localhost:8080
+tnnlr
 
-# Go to [localhost:8080](localhost:8080) and click the "Reload Tunnels from File" button.
+# Go to localhost:8080 and click the "Reload Tunnels from File" button.
 
 ```
 

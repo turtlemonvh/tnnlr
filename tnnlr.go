@@ -1,4 +1,4 @@
-package main
+package tnnlr
 
 import (
 	"encoding/json"
@@ -11,7 +11,6 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/timjchin/unpuzzled"
 	"gopkg.in/gin-gonic/gin.v1"
 	"labix.org/v2/mgo/bson"
 )
@@ -29,10 +28,10 @@ func (m *Message) String() string {
 // Server
 type Tnnlr struct {
 	sync.Mutex
-	template         *template.Template
-	sshExec          string // path to ssh executable
-	logLevel         string
-	tunnelReloadFile string
+	Template         *template.Template
+	SshExec          string // path to ssh executable
+	LogLevel         string
+	TunnelReloadFile string
 	msgs             chan Message
 	tunnels          map[string]*Tunnel
 }
@@ -42,13 +41,13 @@ func (t *Tnnlr) Init() {
 	var level log.Level
 
 	// Parse template
-	t.template, err = template.New("Homepage").Parse(homePage)
+	t.Template, err = template.New("Homepage").Parse(homePage)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Set log level
-	level, err = log.ParseLevel(t.logLevel)
+	level, err = log.ParseLevel(t.LogLevel)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err":          err,
@@ -63,8 +62,8 @@ func (t *Tnnlr) Init() {
 
 	// FIXME: Pull from config
 	// ADD: default username
-	t.tunnelReloadFile = ".tnnlr"
-	t.sshExec = "ssh"
+	t.TunnelReloadFile = ".tnnlr"
+	t.SshExec = "ssh"
 }
 
 // Add a message to the queue
@@ -118,7 +117,7 @@ messageLoop:
 		t.tunnels,
 	}
 
-	if err := t.template.Execute(c.Writer, data); err != nil {
+	if err := t.Template.Execute(c.Writer, data); err != nil {
 		log.WithFields(log.Fields{
 			"err": err.Error(),
 		}).Error("Error executing template")
@@ -135,7 +134,7 @@ func (t *Tnnlr) Reload(c *gin.Context) {
 		message := "Failed to parse tunnels from file"
 		log.WithFields(log.Fields{
 			"err":  err.Error(),
-			"file": t.tunnelReloadFile,
+			"file": t.TunnelReloadFile,
 		}).Error(message)
 		t.AddMessage(message)
 		c.Redirect(http.StatusFound, "/")
@@ -149,7 +148,7 @@ func (t *Tnnlr) Reload(c *gin.Context) {
 			message := fmt.Sprintf("Failed to add tunnel '%s' from file", tnnl.Id)
 			log.WithFields(log.Fields{
 				"err":  err.Error(),
-				"file": t.tunnelReloadFile,
+				"file": t.TunnelReloadFile,
 			}).Error(message)
 			t.AddMessage(message)
 		} else {
@@ -157,18 +156,18 @@ func (t *Tnnlr) Reload(c *gin.Context) {
 		}
 	}
 
-	t.AddMessage(fmt.Sprintf("Finished loading %d of %d tunnels from file: %s", nTunnelsLoaded, len(tmpTunnels), t.tunnelReloadFile))
+	t.AddMessage(fmt.Sprintf("Finished loading %d of %d tunnels from file: %s", nTunnelsLoaded, len(tmpTunnels), t.TunnelReloadFile))
 	c.Redirect(http.StatusFound, "/")
 }
 
 // Save set of tunnels to a file
 func (t *Tnnlr) Save(c *gin.Context) {
-	f, err := os.Create(t.tunnelReloadFile)
+	f, err := os.Create(t.TunnelReloadFile)
 	if err != nil {
 		message := "Failed to open tunnel file"
 		log.WithFields(log.Fields{
 			"err":  err.Error(),
-			"file": t.tunnelReloadFile,
+			"file": t.TunnelReloadFile,
 		}).Error(message)
 		t.AddMessage(message)
 		c.Redirect(http.StatusFound, "/")
@@ -187,14 +186,14 @@ func (t *Tnnlr) Save(c *gin.Context) {
 		message := "Failed to write json to file"
 		log.WithFields(log.Fields{
 			"err":  err.Error(),
-			"file": t.tunnelReloadFile,
+			"file": t.TunnelReloadFile,
 		}).Error(message)
 		t.AddMessage(message)
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
-	t.AddMessage(fmt.Sprintf("Successfully saved tunnels to file: %s", t.tunnelReloadFile))
+	t.AddMessage(fmt.Sprintf("Successfully saved tunnels to file: %s", t.TunnelReloadFile))
 	c.Redirect(http.StatusFound, "/")
 }
 
@@ -216,7 +215,7 @@ func (t *Tnnlr) ReloadOne(c *gin.Context) {
 		message := "Failed to parse tunnels from file"
 		log.WithFields(log.Fields{
 			"err":  err.Error(),
-			"file": t.tunnelReloadFile,
+			"file": t.TunnelReloadFile,
 		}).Error(message)
 		t.AddMessage(message)
 		c.Redirect(http.StatusFound, "/")
@@ -234,7 +233,7 @@ func (t *Tnnlr) ReloadOne(c *gin.Context) {
 	if foundTnnl.Id == "" {
 		message := "Failed to find tunnel with the requested id"
 		log.WithFields(log.Fields{
-			"file": t.tunnelReloadFile,
+			"file": t.TunnelReloadFile,
 		}).Error(message)
 		t.AddMessage(message)
 		c.Redirect(http.StatusFound, "/")
@@ -288,7 +287,7 @@ func (t *Tnnlr) ShowCommand(c *gin.Context) {
 	if !ok {
 		message := "Failed to find tunnel with the requested id"
 		log.WithFields(log.Fields{
-			"file": t.tunnelReloadFile,
+			"file": t.TunnelReloadFile,
 		}).Error(message)
 		t.AddMessage(message)
 		c.Redirect(http.StatusFound, "/")
@@ -305,7 +304,7 @@ func (t *Tnnlr) Load() ([]Tunnel, error) {
 	var tmpTunnels []Tunnel
 
 	// Load from file
-	raw, err := ioutil.ReadFile(t.tunnelReloadFile)
+	raw, err := ioutil.ReadFile(t.TunnelReloadFile)
 	if err != nil {
 		return tmpTunnels, err
 	}
@@ -330,7 +329,7 @@ func (t *Tnnlr) AddTunnel(tnnl Tunnel) error {
 	}
 
 	// Startup
-	if err := tnnl.Run(t.sshExec); err != nil {
+	if err := tnnl.Run(t.SshExec); err != nil {
 		return err
 	}
 
@@ -370,38 +369,4 @@ func (t *Tnnlr) KillAllTunnels() {
 		t.RemoveTunnel(tnnlId)
 	}
 	t.Unlock()
-}
-
-// Config
-
-func main() {
-	tnnlr := &Tnnlr{}
-	app := unpuzzled.NewApp()
-	app.Command = &unpuzzled.Command{
-		Name: "tnnlr",
-		Variables: []unpuzzled.Variable{
-			&unpuzzled.StringVariable{
-				Name:        "log-level",
-				Destination: &(tnnlr.logLevel),
-				Default:     "info",
-			},
-		},
-		Action: func() {
-			// Run website
-			tnnlr.Init()
-			tnnlr.Run()
-		},
-		Subcommands: []*unpuzzled.Command{
-			&unpuzzled.Command{
-				Name:      "ls",
-				Usage:     "List running tunnels",
-				Variables: []unpuzzled.Variable{},
-				Action: func() {
-					tnnlr.Init()
-					// NOT IMPLEMENTED
-				},
-			},
-		},
-	}
-	app.Run(os.Args)
 }

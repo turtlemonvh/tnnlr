@@ -1,4 +1,4 @@
-package main
+package tnnlr
 
 var homePage string = `
 <!doctype html>

@@ -1,12 +1,10 @@
-package main
+package tnnlr
 
 import (
 	"fmt"
 	"os/exec"
 	"strings"
 	"syscall"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // Tunnels
