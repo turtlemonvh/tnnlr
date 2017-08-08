@@ -24,7 +24,7 @@ func (t *Tunnel) getCommand() string {
 	if t.Username != "" {
 		remote = fmt.Sprintf("%s@%s", t.Username, remote)
 	}
-	return fmt.Sprintf(`ssh -L %d:localhost:%d -f %s -N`,
+	return fmt.Sprintf(`ssh -L %d:localhost:%d %s -N`,
 		t.LocalPort,
 		t.RemotePort,
 		remote,

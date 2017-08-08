@@ -40,10 +40,12 @@ tnnlr
 
 ## TODO
 
+- Run tunnels in a goroutine
+- Option for https default url
 - Updates and cleanup to configuration
 - Option to load whole sets of tunnels at a time easily, via file select in browser
 - Less ugly code
 - Less ugly UI
 - Command line interface
 - Poll in the background and keep tunnels open
-- Kill runnels on shutdown
+- Kill tunnels on shutdown
