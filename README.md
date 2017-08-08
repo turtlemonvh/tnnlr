@@ -28,9 +28,11 @@ cat > $GOPATH/src/github.com/turtlemonvh/tnnlr/.tunnlr << EOF
 ]
 EOF
 
-# Start up these tunnels
+# Start up rhe web ui
 cd $GOPATH/src/github.com/turtlemonvh/tnnlr
 go run *.go
+
+# Go to [localhost:8080](localhost:8080) and click the "Reload Tunnels from File" button.
 
 ```
 
