@@ -41,3 +41,4 @@ go run *.go
 - Less ugly code
 - Less ugly UI
 - command line interface
+- poll in the background and keep tunnels open
