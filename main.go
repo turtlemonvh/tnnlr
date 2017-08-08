@@ -84,12 +84,13 @@ func (t *Tnnlr) Run() {
 	}
 	r := gin.Default()
 	r.GET("/", t.HomepageView)
-	r.POST("/reload", t.Reload)
 	r.POST("/save", t.Save)
 	r.POST("/add", t.Add)
 	r.GET("/remove/:id", t.Remove)
-	r.GET("/reload_one/:id", t.ReloadOne)
+	r.POST("/reload", t.Reload)
+	r.GET("/reload/:id", t.ReloadOne)
 	r.GET("/bash_command/:id", t.ShowCommand)
+	r.GET("/status/:id", t.ReloadOne)
 	r.Run()
 }
 
@@ -142,6 +143,7 @@ func (t *Tnnlr) Reload(c *gin.Context) {
 	}
 
 	// Add 1 at a time
+	nTunnelsLoaded := 0
 	for _, tnnl := range tmpTunnels {
 		if err = t.AddTunnel(tnnl); err != nil {
 			message := fmt.Sprintf("Failed to add tunnel '%s' from file", tnnl.Id)
@@ -150,10 +152,12 @@ func (t *Tnnlr) Reload(c *gin.Context) {
 				"file": t.tunnelReloadFile,
 			}).Error(message)
 			t.AddMessage(message)
+		} else {
+			nTunnelsLoaded++
 		}
 	}
 
-	t.AddMessage(fmt.Sprintf("Finished loading tunnels from file: %s", t.tunnelReloadFile))
+	t.AddMessage(fmt.Sprintf("Finished loading %d of %d tunnels from file: %s", nTunnelsLoaded, len(tmpTunnels), t.tunnelReloadFile))
 	c.Redirect(http.StatusFound, "/")
 }
 
@@ -230,7 +234,6 @@ func (t *Tnnlr) ReloadOne(c *gin.Context) {
 	if foundTnnl.Id == "" {
 		message := "Failed to find tunnel with the requested id"
 		log.WithFields(log.Fields{
-			"err":  err.Error(),
 			"file": t.tunnelReloadFile,
 		}).Error(message)
 		t.AddMessage(message)

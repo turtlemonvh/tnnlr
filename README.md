@@ -42,5 +42,6 @@ go run *.go
 - Option to load whole sets of tunnels at a time easily, via file select in browser
 - Less ugly code
 - Less ugly UI
-- command line interface
-- poll in the background and keep tunnels open
+- Command line interface
+- Poll in the background and keep tunnels open
+- Kill runnels on shutdown

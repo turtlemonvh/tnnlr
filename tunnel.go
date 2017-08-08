@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
 	"strings"
+	"syscall"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Tunnels
@@ -13,10 +15,10 @@ type Tunnel struct {
 	Name       string `form:"name" json:"name" binding:"required"`
 	DefaultUrl string `form:"defaultUrl" json:"defaultUrl" binding:"required"`
 	Host       string `form:"host" json:"host" binding:"required"`
-	Username   string `json:"userName"` // can be ""
+	Username   string `form:"username" json:"userName"` // can be ""
 	LocalPort  int32  `form:"localPort" json:"localPort" binding:"required"`
 	RemotePort int32  `form:"remotePort" json:"remotePort" binding:"required"`
-	proc       *os.Process
+	cmd        *exec.Cmd
 }
 
 func (t *Tunnel) getCommand() string {
@@ -29,6 +31,29 @@ func (t *Tunnel) getCommand() string {
 		t.RemotePort,
 		remote,
 	)
+}
+
+// Check if process running the tunnel is alive
+// FIXME: Seems to return true even if process has exited
+func (t *Tunnel) IsAlive() bool {
+	if t.cmd == nil {
+		return false
+	}
+	if t.cmd.Process == nil {
+		return false
+	}
+
+	// https://stackoverflow.com/questions/15204162/check-if-a-process-exists-in-go-way
+	if err := t.cmd.Process.Signal(syscall.Signal(0)); err != nil {
+		return false
+	}
+
+	// ProcessState is set after a call to `Wait` or `Run`
+	if t.cmd.ProcessState != nil {
+		return t.cmd.ProcessState.Exited()
+	}
+
+	return true
 }
 
 // FIXME: Check required fields
@@ -51,14 +76,16 @@ func (t *Tunnel) Run(sshExec string) error {
 	if err != nil {
 		return err
 	}
-	t.proc = cmd.Process
+	t.cmd = cmd
 	return nil
 }
 
 // Stop the tunnel if already running
 func (t *Tunnel) Stop() error {
-	if t.proc != nil {
-		return t.proc.Kill()
+	if t.cmd != nil {
+		if t.cmd.Process != nil {
+			return t.cmd.Process.Kill()
+		}
 	}
 	return nil
 }
