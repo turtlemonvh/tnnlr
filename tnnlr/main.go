@@ -32,28 +32,29 @@ func main() {
 			&unpuzzled.StringVariable{
 				Name:        "tunnels",
 				Destination: &(myTnnlr.TunnelReloadFile),
-				Description: "Configuration file listing tunnels to load.",
+				Description: "Configuration file listing tunnels. This can be read from and written to via the web UI.",
 				Default:     ".tnnlr",
 			},
 			&unpuzzled.StringVariable{
 				Name:        "ssh-exec",
 				Destination: &(myTnnlr.SshExec),
-				Description: "The executable process to use for ssh. Can be a full path or just a cmd name.",
+				Description: "The executable process to use for ssh. Can be a full path or just a command name that works in your shell.",
 				Default:     "ssh",
 			},
 			&unpuzzled.IntVariable{
 				Name:        "port",
 				Destination: &(myTnnlr.Port),
-				Description: "The port to run the webserver on.",
+				Description: "The port to run the server on for the web UI.",
 				Default:     8080,
 			},
 		},
 		Action: func() {
-			// Run website
+			// Run web server
 			myTnnlr.Init()
 			myTnnlr.Run()
 		},
 		Subcommands: []*unpuzzled.Command{
+			/*
 			&unpuzzled.Command{
 				Name:      "ls",
 				Usage:     "List running tunnels",
@@ -63,6 +64,7 @@ func main() {
 					// NOT IMPLEMENTED
 				},
 			},
+			*/
 		},
 	}
 	app.Authors = []unpuzzled.Author{

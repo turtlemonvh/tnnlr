@@ -1,10 +1,14 @@
 # Tunnlr
 
-Tnnlr is a simple utility to managing ssh tunnels.  It is currently a very ugly work in progress, but it does work 
+Tnnlr is a simple utility to managing ssh tunnels.  It is currently a very ugly work in progress, but it does help to do the following
 
-* keep tunnels open
+* keep ssh tunnels open
 * compose new tunnels using a helpful ui
 * reload a whole set of tunnels quickly
+
+Tnnlr shells out to a local version of ssh instead of bundling in its own ssh utilities.  This was done so that complex local ssh configurations are respected by default.
+
+So if you find yourself commonly launching a set of the same tunnels to access admin apis and other utilies when working on a project, tnnlr may save you some time.
 
 ## Usage
 
@@ -42,7 +46,7 @@ $ tnnlr
 # Go to localhost:8080 and click the "Reload Tunnels from File" button.
 
 # Check help docs for more information
-$ tnnlr -h
+$ go run tnnlr -h
 APP:
 cli
 
@@ -51,7 +55,6 @@ tnnlr
 
 
 AVAILABLE SUBCOMMANDS:
-ls : List running tunnels
 help : Print this help message
 
 PARSING ORDER: (set values will override in this order)
@@ -64,18 +67,19 @@ VARIABLES:
 | --log-level | info    | No       | LOG_LEVEL | Logging levels. Options are:           |
 |             |         |          |           | [panic,fatal,error,warning,info,debug] |
 | --tunnels   | .tnnlr  | No       | TUNNELS   | Configuration file listing             |
-|             |         |          |           | tunnels to load.                       |
+|             |         |          |           | tunnels. This can be read from         |
+|             |         |          |           | and written to via the web UI.         |
 | --ssh-exec  | ssh     | No       | SSH_EXEC  | The executable process to use          |
 |             |         |          |           | for ssh. Can be a full path or         |
-|             |         |          |           | just a cmd name.                       |
-| --port      |    8080 | No       | PORT      | The port to run the webserver          |
-|             |         |          |           | on.                                    |
+|             |         |          |           | just a command name that works         |
+|             |         |          |           | in your shell.                         |
+| --port      |    8080 | No       | PORT      | The port to run the server on          |
+|             |         |          |           | for the web UI.                        |
 +-------------+---------+----------+-----------+----------------------------------------+
 
 
 Authors:
 Timothy Van Heest (timothy@ionic.com)
-
 ```
 
 ## TODO
