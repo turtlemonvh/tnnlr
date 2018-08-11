@@ -5,6 +5,13 @@ var homePage string = `
 <head>
     <title>Tnnlr</title>
     <style>
+        #tips {
+            float: left;
+            clear: left;
+        }
+        #tips > h2 {
+            float: none;
+        }
         table {
             float: left;
             clear: left;
@@ -39,7 +46,7 @@ var homePage string = `
     {{ if $.HasMessages }}
     <h2>Messages</h2>
         {{range $nmsg, $msg := $.Messages }}
-            <p class="msg">{{ $msg }}</p>
+            <p class="msg">{{ $msg.String }}</p>
         {{ end }}
     {{ end }}
 
@@ -113,5 +120,19 @@ var homePage string = `
         </table>
         
     </form>
+
+    <div id="tips">
+        <hr>
+        <h2>Tips</h2>
+        <ul>
+            <li>
+            The process may be marked "not alive" because of a network timeout.  Try reloading this page to check status again.
+            </li>
+            <li>
+            Running "reload" both re-loads the definition of a process disk and restarts that process.  Be sure to save any edited process state to disk before reloading.
+            </li>
+        </ul>
+    </div>
+
 </body>
 `

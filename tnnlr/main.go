@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"strings"
 
+	"github.com/sirupsen/logrus"
 	"github.com/timjchin/unpuzzled"
 	"github.com/turtlemonvh/tnnlr"
 )
@@ -10,6 +13,11 @@ import (
 // Config
 
 func main() {
+	logLevels := make([]string, len(logrus.AllLevels))
+	for il, l := range logrus.AllLevels {
+		logLevels[il] = l.String()
+	}
+
 	myTnnlr := &tnnlr.Tnnlr{}
 	app := unpuzzled.NewApp()
 	app.Command = &unpuzzled.Command{
@@ -18,7 +26,26 @@ func main() {
 			&unpuzzled.StringVariable{
 				Name:        "log-level",
 				Destination: &(myTnnlr.LogLevel),
+				Description: fmt.Sprintf("Logging levels. Options are: [%s]", strings.Join(logLevels, ",")),
 				Default:     "info",
+			},
+			&unpuzzled.StringVariable{
+				Name:        "tunnels",
+				Destination: &(myTnnlr.TunnelReloadFile),
+				Description: "Configuration file listing tunnels to load.",
+				Default:     ".tnnlr",
+			},
+			&unpuzzled.StringVariable{
+				Name:        "ssh-exec",
+				Destination: &(myTnnlr.SshExec),
+				Description: "The executable process to use for ssh. Can be a full path or just a cmd name.",
+				Default:     "ssh",
+			},
+			&unpuzzled.IntVariable{
+				Name:        "port",
+				Destination: &(myTnnlr.Port),
+				Description: "The port to run the webserver on.",
+				Default:     8080,
 			},
 		},
 		Action: func() {
@@ -37,6 +64,16 @@ func main() {
 				},
 			},
 		},
+	}
+	app.Authors = []unpuzzled.Author{
+		{
+			Name: "Timothy Van Heest",
+			Email: "timothy@ionic.com",
+		},
+	}
+	app.ParsingOrder = []unpuzzled.ParsingType{
+		unpuzzled.EnvironmentVariables,
+		unpuzzled.CliFlags,
 	}
 	app.Run(os.Args)
 }
