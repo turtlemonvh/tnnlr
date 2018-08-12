@@ -38,7 +38,7 @@ func main() {
 			&unpuzzled.StringVariable{
 				Name:        "ssh-exec",
 				Destination: &(myTnnlr.SshExec),
-				Description: "The executable process to use for ssh. Can be a full path or just a command name that works in your shell.",
+				Description: "The executable to use for ssh. Can be a full path or just a command name that works in your shell.",
 				Default:     "ssh",
 			},
 			&unpuzzled.IntVariable{

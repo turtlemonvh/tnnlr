@@ -21,11 +21,17 @@ import (
 // FIXME: Add fields to improve UI
 type Message struct {
 	msg string
+	mtime time.Time
 }
 
-func (m *Message) String() string {
+func (m *Message) Mstring() string {
 	return m.msg
 }
+
+func (m *Message) Tstring() string {
+	return m.mtime.Format(time.RFC822)
+}
+
 
 // Server
 type Tnnlr struct {
@@ -70,7 +76,6 @@ func (t *Tnnlr) Init() {
 	log.SetLevel(level)
 
 	// A generously buffered channel
-	// FIXME: Use a list for messages instead so app doesn't lock when queue is full
 	t.msgs = make(chan Message, 100)
 	t.tunnels = make(map[string]*Tunnel)
 
@@ -81,17 +86,24 @@ func (t *Tnnlr) Init() {
 }
 
 // Add a message to the queue
+// If the channel is full, the message is logged and discarded
 func (t *Tnnlr) AddMessage(msg string) {
 	select {
-	case t.msgs <- Message{msg}:
-	case <-time.After(time.Second):
+	case t.msgs <- Message{msg, time.Now()}:
 		log.WithFields(log.Fields{
 			"nmsgs": len(t.msgs),
-		}).Error("Message buffer is full. Reload page to drain messages.")
+			"msg": msg,
+		}).Debug("Added message.")
+	case <-time.After(1*time.Millisecond):
+		log.WithFields(log.Fields{
+			"nmsgs": len(t.msgs),
+			"msg": msg,
+		}).Error("Message buffer is full, can't add message. Reload page to drain messages.")
 	}
 }
 
 func (t *Tnnlr) Run() {
+	// Launch process to clean logs and pid files
 	go t.CleanBookkeepingDirs()
 
 	if log.GetLevel() != log.DebugLevel {
@@ -105,6 +117,7 @@ func (t *Tnnlr) Run() {
 	r.POST("/reload", t.Reload)
 	r.GET("/reload/:id", t.ReloadOne)
 	r.GET("/bash_command/:id", t.ShowCommand)
+	r.GET("/logs/:id", t.ShowLogs)
 	r.GET("/status/:id", t.ReloadOne)
 	r.Run(fmt.Sprintf(":%d", t.Port))
 }
@@ -317,6 +330,38 @@ func (t *Tnnlr) ShowCommand(c *gin.Context) {
 	}
 
 	c.String(200, tnnl.getCommand())
+}
+
+func (t *Tnnlr) ShowLogs(c *gin.Context) {
+	rTnnlId := c.Param("id")
+
+	log.WithFields(log.Fields{
+		"id":      rTnnlId,
+		"tunnels": t.tunnels,
+	}).Info("Showing logs for tunnel")
+
+	tnnl, ok := t.tunnels[rTnnlId]
+	if !ok {
+		message := "Failed to find tunnel with the requested id"
+		log.WithFields(log.Fields{
+			"file": t.TunnelReloadFile,
+		}).Error(message)
+		t.AddMessage(message)
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	logfilePath, err := tnnl.LogPath()
+	if err != nil {
+		message := "Failed to find logfile for tunnel with the requested id"
+		log.WithFields(log.Fields{
+			"Id": tnnl.Id,
+		}).Error(message)
+		t.AddMessage(message)
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+	c.File(logfilePath)
 }
 
 // Load from disk

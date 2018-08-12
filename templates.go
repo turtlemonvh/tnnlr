@@ -46,7 +46,7 @@ var homePage string = `
     {{ if $.HasMessages }}
     <h2>Messages</h2>
         {{range $nmsg, $msg := $.Messages }}
-            <p class="msg">{{ $msg.String }}</p>
+            <p class="msg"><i>{{ $msg.Tstring }}</i> : {{ $msg.Mstring }}</p>
         {{ end }}
     {{ end }}
 
@@ -60,8 +60,9 @@ var homePage string = `
             <th>Remote Port</th>
             <th>Default URL</th>
             <th>Bash Command</th>
+            <th>Logs</th>
             <th>Is Alive?</th>
-            <th>Close</th>
+            <th>Remove</th>
             <th>Reload</th>
         </tr>
     {{range $tunnelId, $tunnel := $.Tunnels }}
@@ -71,8 +72,17 @@ var homePage string = `
             <td>{{ $tunnel.Host }}</td>
             <td>{{ $tunnel.LocalPort }}</td>
             <td>{{ $tunnel.RemotePort }}</td>
-            <td><a href="http://localhost:{{ $tunnel.LocalPort }}{{ $tunnel.DefaultUrl }}" target="_blank">http://localhost:{{ $tunnel.LocalPort }}{{ $tunnel.DefaultUrl }}</a></td>
-            <td><a href="bash_command/{{ $tunnelId }}/" target="_blank">Show command</a></td>
+            <td>
+                <a href="http://localhost:{{ $tunnel.LocalPort }}{{ $tunnel.DefaultUrl }}" target="_blank">
+                    http://localhost:{{ $tunnel.LocalPort }}{{ $tunnel.DefaultUrl }}
+                </a>
+            </td>
+            <td>
+                <a href="bash_command/{{ $tunnelId }}/" target="_blank">Show command</a>
+            </td>
+            <td>
+                <a href="logs/{{ $tunnelId }}/" target="_blank">Show logs</a>
+            </td>
             <td>{{ $tunnel.IsAlive }}</td>
             <td><a href="remove/{{ $tunnelId }}/">Remove</a></td>
             <td><a href="reload/{{ $tunnelId }}/">Reload</a></td>

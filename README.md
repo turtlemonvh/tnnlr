@@ -69,7 +69,7 @@ VARIABLES:
 | --tunnels   | .tnnlr  | No       | TUNNELS   | Configuration file listing             |
 |             |         |          |           | tunnels. This can be read from         |
 |             |         |          |           | and written to via the web UI.         |
-| --ssh-exec  | ssh     | No       | SSH_EXEC  | The executable process to use          |
+| --ssh-exec  | ssh     | No       | SSH_EXEC  | The executable to use                  |
 |             |         |          |           | for ssh. Can be a full path or         |
 |             |         |          |           | just a command name that works         |
 |             |         |          |           | in your shell.                         |
@@ -82,9 +82,14 @@ Authors:
 Timothy Van Heest (timothy@ionic.com)
 ```
 
+## Web UI
+
+It's not pretty but it works.
+
+![Alt text](webui.png?raw=true "Web UI")
+
 ## TODO
 
-- Serve logfiles through UI
 - Options to let tunnels continue running on shutdown
 - Option for https default url
 - Option to load whole sets of tunnels at a time easily, via file select in browser
