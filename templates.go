@@ -141,6 +141,9 @@ var homePage string = `
             <li>
             Running "reload" both re-loads the definition of a process disk and restarts that process.  Be sure to save any edited process state to disk before reloading.
             </li>
+            <li>
+            Leave the "SSH Username" section of the form empty when adding a new tunnel to use the default value specified in your ssh config.
+            </li>
         </ul>
     </div>
 

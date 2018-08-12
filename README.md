@@ -88,11 +88,62 @@ It's not pretty but it works.
 
 ![Alt text](webui.png?raw=true "Web UI")
 
+## Tips
+
+### SSH config
+
+For your ssh config (`~/.ssh/config`), something like this works well.  Note that `StrictHostKeyChecking` means you won't get any warning about conneting to new hosts. 
+
+```
+Host *
+  User myusername
+  StrictHostKeyChecking no
+  ServerAliveInterval 60
+```
+
+Depending on your network configuration, you may want to use [the `TCPKeepAlive` setting](https://unix.stackexchange.com/questions/34004/how-does-tcp-keepalive-work-in-ssh) as well.
+
+### Alternatives
+
+There are many other ssh tunnel management tools that are more mature than this.  I created my own for a mixture of these reasons
+
+* I wanted to be able to configure it programmatically from the output of other tools (e.g. inventory scripts). This is why the config is in json.
+* I wanted the tunnels to be project specific. Different projects have different configurations, and I may only be able to create the tunnel when I'm VPN'd to a specific network.
+* I wanted something that would repect my ssh config, which is pretty complex.
+* I mainly wanted this for connecting to dashboards for monitoring products (Kibana, Grafana, CheckMK), so I wanted to be able to include a default url that I could just click on to get to the dashboard I wanted to view.
+* I kept forgetting the sytax for creating an ssh tunnel, and I wanted to make sure the tool would have an option show that so I could run the tunnel directly (via ssh on the command line).
+* I wanted something that would work on multiple OSes (Mac, Windows, Linux).
+* I wanted a web UI. In addition to being easy to work with, this means I can use this same program to manage tunnels in a headless VM.
+
+Some things that seem to be present in other tools that are missing here
+
+* SOCKS proxy
+* UN/PW authentication for a tunnel
+* A less ugly UI
+* Tunnels that are created automatically on startup
+
+Sample of example tools (there are [many more](https://github.com/search?q=ssh+tunnel)):
+
+* https://www.tynsoe.org/v2/stm/ and https://www.opoet.com/pyro/
+    * MacOS
+* https://github.com/tinned-software/ssh-tunnel-manager
+    * A collection of bash scripts for managing persistent tunnels
+* https://github.com/pahaz/sshtunnel
+    * Python library, so not a tool
+    * I used this in v1, but had issues with tunnels dying
+* https://github.com/agebrock/tunnel-ssh
+    * NodeJS library
+* https://github.com/jfifield/sshtunnel
+    * Java tool
+    * Limited conifguration
+
 ## TODO
 
 - Options to let tunnels continue running on shutdown
 - Option for https default url
 - Option to load whole sets of tunnels at a time easily, via file select in browser
+- Option for un/pw auth for ssh connections (pub/priv key only right now)
+- Option for multiple named dashboard views for a single tunnel
 - Less ugly code
 - Less ugly UI
 - Command line interface
