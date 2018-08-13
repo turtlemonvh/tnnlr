@@ -1,4 +1,4 @@
-# Tunnlr
+# Tnnlr
 
 Tnnlr is a simple utility to managing ssh tunnels.  It is currently a very ugly work in progress, but it does help to do the following
 
@@ -21,7 +21,7 @@ $ ( cd $GOPATH/src/github.com/turtlemonvh/tnnlr && go install ./tnnlr )
 
 # Create a config file with tunnels for this project
 # You can also just start the server and create it through the UI
-$ cat > $GOPATH/src/github.com/turtlemonvh/tnnlr/.tunnlr << EOF
+$ cat > $GOPATH/src/github.com/turtlemonvh/tnnlr/.tnnlr << EOF
 [
     {
         "defaultUrl": "/", 
