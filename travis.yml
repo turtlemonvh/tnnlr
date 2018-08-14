@@ -1,0 +1,14 @@
+language: go
+
+before_install:
+  # Setup dependency management tool
+  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+
+install:
+  - dep ensure
+
+go:
+  - 1.6
+  - 1.7
+  - 1.8
+  - tip
