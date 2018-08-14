@@ -101,12 +101,12 @@
   version = "v1.0.6"
 
 [[projects]]
-  digest = "1:b2e227c4e86faf77a2a827b596e2e181c87f6626e833fa0b720ceaa1ac80e274"
+  branch = "master"
+  digest = "1:c5bc63bc801394b39664288b4f9ebf406d71cdf170f4f1c8d920de46a7468c93"
   name = "github.com/timjchin/unpuzzled"
   packages = ["."]
   pruneopts = "UT"
-  revision = "097fbae4db9d6babec8248e51168ae4f286b6a48"
-  version = "v1.2.0"
+  revision = "7ced90ec022e2cb13972bb0b32d0cbceacf63477"
 
 [[projects]]
   digest = "1:c268acaa4a4d94a467980e5e91452eb61c460145765293dc0aed48e5e9919cc6"

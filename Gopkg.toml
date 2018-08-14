@@ -39,7 +39,7 @@
 
 [[constraint]]
   name = "github.com/timjchin/unpuzzled"
-  version = "1.2.0"
+  branch = "master"
 
 [[constraint]]
   branch = "(default)"
