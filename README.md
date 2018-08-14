@@ -1,4 +1,4 @@
-# Tnnlr
+# Tnnlr [![Build Status](https://travis-ci.org/turtlemonvh/tnnlr.png?branch=master)](https://travis-ci.org/turtlemonvh/tnnlr)
 
 Tnnlr is a simple utility to managing ssh tunnels.  It is currently a very ugly work in progress, but it does help to do the following
 
