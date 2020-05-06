@@ -148,4 +148,4 @@ Sample of example tools (there are [many more](https://github.com/search?q=ssh+t
 - Less ugly UI
 - Command line interface
 - Make `ls` command do something useful
-
+- Move from dep to go modules
